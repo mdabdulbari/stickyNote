@@ -109,7 +109,7 @@ def main():
                             wisdom_bot.send_message(first_chat_id, 'Successfully deleted')
                             connection.commit()
                             repo.add(u=True)
-                            repo.commit('-m "Add new user"')
+                            repo.commit('-m "Add item to a list"')
                             repo.push()
                             new_offset = first_update_id + 1
                             break
