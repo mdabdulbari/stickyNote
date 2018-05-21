@@ -14,7 +14,6 @@ class BotHandler:
             self.token = token
             self.api_url = "https://api.telegram.org/bot{}/".format(token)
 
-
     def get_updates(self, offset=0, timeout=30):
         method = 'getUpdates'
         params = {'timeout': timeout, 'offset': offset}
@@ -54,7 +53,10 @@ def main():
         time = str(datetime.now())[11:19]
         if '09:00:00' < time:
             repo.pull()
-            
+            users = database.execute("SELECT user_id FROM users;")
+            for user in users:
+                print(user)
+
         if len(all_updates) > 0:
             for current_update in all_updates:
                 first_update_id = current_update['update_id']
@@ -72,11 +74,21 @@ def main():
                 else:
                     first_chat_name = "unknown"
 
+                users = database.execute("SElECT name FROM users WHERE user_id={};".format(first_chat_id))
+                i = 0
+                for element in users:
+                    i = 1
+                if i == 0:
+                    database.execute("INSERT INTO users (user_id, name) VALUES ({}, '{}');".format(first_chat_id, first_chat_name))
+                    connection.commit()
+                    repo.add(u=True)
+                    repo.commit('-m "Add new user"')
+                    repo.push()
                 if first_chat_text == 'Hi' or first_chat_text == "hi" or first_chat_text == "hello" or first_chat_text == "Hello":
                     wisdom_bot.send_message(first_chat_id, 'Hello ' + first_chat_name)
                     new_offset = first_update_id + 1
                 
-                elif first_chat_text == "list" or first_chat_text == "List":
+                elif first_chat_text == "list" or first_chat_text == "List" or first_chat_text == "/list":
                     list_items = database.execute("SELECT list_item FROM user_list WHERE user_id={};".format(first_chat_id))
                     message = "Here is your list\n"
                     i = 1
@@ -89,6 +101,9 @@ def main():
                 elif first_chat_text[:3] == "add" or first_chat_text[:3] == "Add":
                     database.execute("INSERT INTO user_list (user_id, list_item) VALUES ({}, '{}')".format(first_chat_id, first_chat_text[4:]))
                     connection.commit()
+                    repo.add(u=True)
+                    repo.commit('-m "Add item to a list"')
+                    repo.push()
                     wisdom_bot.send_message(first_chat_id, 'Successfully added to your list')
                     new_offset = first_update_id + 1
             
@@ -109,7 +124,7 @@ def main():
                             wisdom_bot.send_message(first_chat_id, 'Successfully deleted')
                             connection.commit()
                             repo.add(u=True)
-                            repo.commit('-m "Add item to a list"')
+                            repo.commit('-m "Delete item from a list"')
                             repo.push()
                             new_offset = first_update_id + 1
                             break
