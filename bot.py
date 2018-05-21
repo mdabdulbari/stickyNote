@@ -51,7 +51,7 @@ def main():
         
         all_updates=wisdom_bot.get_updates(new_offset)
         time = str(datetime.now())[11:19]
-        if '09:00:00' < time:
+        if '09:00:00' > time:
             repo.pull()
             users = database.execute("SELECT user_id FROM users;")
             for user in users:
@@ -140,7 +140,7 @@ def main():
 This is how you can use me
 
 Use 'Add XXX' to add an item to your list
-Use 'List' to check display your list
+Use 'List' to display your list
 Use 'Delete X' to an item from your list
                         """)
                     new_offset = first_update_id + 1
