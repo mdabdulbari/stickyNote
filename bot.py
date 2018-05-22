@@ -62,9 +62,7 @@ def main():
                 i = 1
                 for element in user_list:
                     if i == user[1]:
-                        print(user[0])
-                        print(element[1])
-                        # wisdom_bot.send_message(user[0], element[1])
+                        wisdom_bot.send_message(user[0], element[1])
                         database.execute("UPDATE users SET count=count+1 WHERE user_id={};".format(user[0]))
                         connection.commit()
                         repo.add(u=True)
@@ -150,6 +148,52 @@ def main():
                         else:
                             new_offset = first_update_id + 1
                             break
+                
+                elif first_chat_text == "count" or first_chat_text == "/count":
+                    counts = database.execute("SELECT count FROM users WHERE user_id={};".format(first_chat_id))
+                    for count in counts:
+                        wisdom_bot.send_message(first_chat_id, 'The next item in queue is: {}'.format(count[0]))
+                        new_offset = first_update_id + 1
+                
+                elif first_chat_text == "inc_count" or first_chat_text == "/inc_count":
+                    database.execute("UPDATE users SET count=count+1 WHERE user_id={};".format(first_chat_id))
+                    connection.commit()
+                    repo.add(u=True)
+                    repo.commit('-m "Add new user"')
+                    repo.push()
+                    wisdom_bot.send_message(first_chat_id, 'Successfully updated count')
+
+                elif first_chat_text == "dec_count" or first_chat_text == "/dec_count":
+                    database.execute("UPDATE users SET count=count-1 WHERE user_id={};".format(first_chat_id))
+                    connection.commit()
+                    repo.add(u=True)
+                    repo.commit('-m "Add new user"')
+                    repo.push()
+                    wisdom_bot.send_message(first_chat_id, 'Successfully updated count')
+
+                elif first_chat_text[9] == "inc_count":
+                    try:
+                        count = int(first_chat_text[10:])
+                        database.execute("UPDATE users SET count=count+{} WHERE user_id={};".format(count, first_chat_id))
+                        connection.commit()
+                        repo.add(u=True)
+                        repo.commit('-m "Add new user"')
+                        repo.push()
+                        wisdom_bot.send_message(first_chat_id, 'Successfully updated count')
+                    except:
+                        wisdom_bot.send_message(first_chat_id, 'Sorry wrong format')
+
+                elif first_chat_text[9] == "dec_count":
+                    try:
+                        count = int(first_chat_text[10:])
+                        database.execute("UPDATE users SET count=count-{} WHERE user_id={};".format(count, first_chat_id))
+                        connection.commit()
+                        repo.add(u=True)
+                        repo.commit('-m "Add new user"')
+                        repo.push()
+                        wisdom_bot.send_message(first_chat_id, 'Successfully updated count')
+                    except:
+                        wisdom_bot.send_message(first_chat_id, 'Sorry wrong format')
 
                 else:
                     wisdom_bot.send_message(first_chat_id,"""
@@ -158,6 +202,9 @@ This is how you can use me
 Use 'Add XXX' to add an item to your list
 Use 'List' to display your list
 Use 'Delete X' to an item from your list
+Use 'count' to check next item in line
+Use 'inc_count XX' to increment 'count' by a number
+Use 'dec_count XX' to decremet 'count' by a number
                         """)
                     new_offset = first_update_id + 1
 
