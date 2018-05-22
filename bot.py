@@ -6,7 +6,7 @@ import sqlite3
 import git
 import os
 
-#repo = git.cmd.Git("~/wisdombot/WisdomBOT/")
+#repo = git.cmd.Git("~/stickyNotes/stickyNotes/")
 repo = git.cmd.Git(".")
 
 class BotHandler:
@@ -48,14 +48,30 @@ def main():
     new_offset = 0
 
     while True:
-        
         all_updates=wisdom_bot.get_updates(new_offset)
         time = str(datetime.now())[11:19]
-        if '09:00:00' > time:
+        if '09:00:00' < time < '09:00:30':
             repo.pull()
-            users = database.execute("SELECT user_id FROM users;")
+            users = database.execute("SELECT user_id, count FROM users;")
+            users_list = []
             for user in users:
-                print(user)
+                users_list.append(user)
+
+            for user in users_list:
+                user_list = database.execute("SELECT * FROM user_list WHERE user_id={};".format(user[0]))
+                i = 1
+                for element in user_list:
+                    if i == user[1]:
+                        print(user[0])
+                        print(element[1])
+                        # wisdom_bot.send_message(user[0], element[1])
+                        database.execute("UPDATE users SET count=count+1 WHERE user_id={};".format(user[0]))
+                        connection.commit()
+                        repo.add(u=True)
+                        repo.commit('-m "Add new user"')
+                        repo.push()
+                        break
+                    i += 1
 
         if len(all_updates) > 0:
             for current_update in all_updates:
