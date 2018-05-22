@@ -162,6 +162,7 @@ def main():
                     repo.commit('-m "Add new user"')
                     repo.push()
                     wisdom_bot.send_message(first_chat_id, 'Successfully updated count')
+                    new_offset = first_update_id + 1
 
                 elif first_chat_text == "dec_count" or first_chat_text == "/dec_count":
                     database.execute("UPDATE users SET count=count-1 WHERE user_id={};".format(first_chat_id))
@@ -170,6 +171,7 @@ def main():
                     repo.commit('-m "Add new user"')
                     repo.push()
                     wisdom_bot.send_message(first_chat_id, 'Successfully updated count')
+                    new_offset = first_update_id + 1
 
                 elif first_chat_text[9] == "inc_count":
                     try:
@@ -182,6 +184,7 @@ def main():
                         wisdom_bot.send_message(first_chat_id, 'Successfully updated count')
                     except:
                         wisdom_bot.send_message(first_chat_id, 'Sorry wrong format')
+                    new_offset = first_update_id + 1
 
                 elif first_chat_text[9] == "dec_count":
                     try:
@@ -194,6 +197,7 @@ def main():
                         wisdom_bot.send_message(first_chat_id, 'Successfully updated count')
                     except:
                         wisdom_bot.send_message(first_chat_id, 'Sorry wrong format')
+                    new_offset = first_update_id + 1
 
                 else:
                     wisdom_bot.send_message(first_chat_id,"""
