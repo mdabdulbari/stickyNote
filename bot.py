@@ -109,7 +109,7 @@ def main():
                     message = "Here is your list\n"
                     i = 1
                     for element in list_items:
-                        message = message + '\n'+ str(i) + '. ' + element[0]
+                        message = message + '\n'+ str(i) + '. ' + str(element[0])
                         i += 1
                     wisdom_bot.send_message(first_chat_id, message)
                     new_offset = first_update_id + 1
