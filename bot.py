@@ -74,7 +74,10 @@ def main():
         if len(all_updates) > 0:
             for current_update in all_updates:
                 first_update_id = current_update['update_id']
-                if 'text' not in current_update['message']:
+                if 'edited_message' in current_update:
+                    new_offset = first_update_id + 1
+                    break
+                elif 'text' not in current_update['message']:
                     first_chat_text='New member'
                 else:
                     first_chat_text = current_update['message']['text']
@@ -173,7 +176,7 @@ def main():
                     wisdom_bot.send_message(first_chat_id, 'Successfully updated count')
                     new_offset = first_update_id + 1
 
-                elif first_chat_text[9] == "inc_count":
+                elif first_chat_text[:9] == "inc_count":
                     try:
                         count = int(first_chat_text[10:])
                         database.execute("UPDATE users SET count=count+{} WHERE user_id={};".format(count, first_chat_id))
@@ -186,7 +189,7 @@ def main():
                         wisdom_bot.send_message(first_chat_id, 'Sorry wrong format')
                     new_offset = first_update_id + 1
 
-                elif first_chat_text[9] == "dec_count":
+                elif first_chat_text[:9] == "dec_count":
                     try:
                         count = int(first_chat_text[10:])
                         database.execute("UPDATE users SET count=count-{} WHERE user_id={};".format(count, first_chat_id))
